@@ -28,7 +28,11 @@
             <img src="blinkschematic.png" width=400>
             <p> The red and green LEDs have a low enough voltage drop that two can be run in series and have enough current to be bright
                 The blue LEDs have a much higher voltage drop around 3 V so I need to run them in parallel. I used 330 ohm resistors
-                for all three LEDs to reduce the current and brighness a little bit more so that it was easier to look at.
+                for all three LEDs to reduce the current and brighness a little bit more so that it was easier to look at. To ensure that my LEDs
+                wouldn't burn out I use a voltage drop of 1.7 for red and yellow and 2.5 for blue and ohms law. For red and yellow 5 - 1.7 = 0.03 amps * R_min
+                R_min = 110, so 330 would be safe to use. For blue 5 - 2.5 = 0.03 amps * R_min, R_min = 83 so my resistance of 330 + 100 = 430 ohms would be more than enough. 
+                Having this reduced current would make the LEDs dimmer and more viewable. 
+
             </p>
             <h3> Here is a close up picture of my circut 
             </h3>
