@@ -69,3 +69,11 @@ a {
   text-decoration: none;
 }
 
+.imgcont {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.imgcont > div{
+  margin: 10px;
+}
