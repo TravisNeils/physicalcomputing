@@ -77,3 +77,7 @@ a {
 .imgcont > div{
   margin: 10px;
 }
+
+.imgcont  p{
+  width: 400px;
+}
