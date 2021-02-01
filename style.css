@@ -36,6 +36,10 @@ a {
   float: left;
 }
 
+p {
+  max-width: 600px;
+}
+
 .assignment:hover { overflow:auto }
 
 .assignment a {

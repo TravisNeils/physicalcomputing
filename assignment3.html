@@ -1,0 +1,128 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title> Travis Assignment 2</title> 
+
+        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+    </head> 
+    <body> 
+        <div class="header">
+            <h1>Fade</h1>
+            <h3> Travis Neils</h3>
+            <h3>Here is a video of my circut!</h3>
+            <video width="540" controls autoplay loop muted>
+                <source src="media/io.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+
+            <h3>Here is a video of my Serial Output!</h3>
+            <video width="540" controls autoplay loop muted>
+                <source src="media/serial_io.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            <p>
+                For this assignment I wanted to see how a LED and a LDR interact. I hooked them up so the LED would have 
+                a brightness set to the inverse of the measured brightness by the LDR. My hope would be that they would have
+                a steady state solution that has the brightness oscillating between high and low but It has an internal loss that 
+                causes it to slowly approach a center value. 
+            </p>
+            <img src="media/io_circuit.png" width=400>
+            <p> The yellow leds is connected to a 220 ohm resistor. For red, green and yellow the voltage drop is 1.7 V and the max current is
+                30 mAmps so I use the formula 5 - 1.7 = 0.03 amps * R_min
+                R_min = 110, so 220 and 330 would both be safe to use to avoid burning out the resistor. 
+            </p>
+            <p>
+                I use a 10k Ω resistor in the voltage divider as suggested. When the LDR is in the dark I measured a resistance 
+                of 120k ohms when the LED turns on the Resistance decreases substantially. With the LED at full brightness I measured a resistance of 500 Ω. 
+            </p>
+            <p>
+                To calculate V_out when the light is off (R1 is at at maximum resistance) I use 5V * 10kΩ / (120kΩ + 10kΩ) = .4 V. To calculate V_out with LED at max,  
+                I use 5V * 10kΩ / (500Ω + 10kΩ) = 4.76 V. 
+            </p>
+            <p>
+                To translate those into expected analog voltage measurements I can divide by V_out by 5 volts / 1024 units
+                and get expected 85 units for Dark and 950 for light should be produced by analogRead on the serial. I get pretty similar to those numbers in reality.
+            </p>
+            <h3> Here is a close up picture of my circuit
+            </h3>
+            <div class='imgcont'>
+                <div>
+                    <img src="media/io1.jpg" width=400>
+                    <p> The circuit as tested in the dark, White is sensor, black ground, red 5V, orange pin 9. The LED on the right is 220 ohms and the LEd on the left
+                        is 10k Ohms
+                    </p>
+                </div>
+                <div>
+                    <img src="media/io2.jpg" width=400>
+                    <p>The black wire acts as a ground for both parts of the circuit. The LED is wired to the ground with the yellow wire.</p>
+                </div>
+                <div>
+                    <img src="media/io3.jpg" width=400>
+                    <p> The LDR right up against the yellow LED</p>
+                </div>
+                <div>
+                    <img src="media/io4.jpg" width=400>
+                    <p>Top down view of the circuit. The output(white) is in the center left while the 5V (Dark red) is top left. </p>
+                </div>
+                <div>
+                    <img src="media/io5.jpg" width=400>
+                    <p>My Arduino with all attached wires. </p>
+                </div>
+            </div>
+            <h3>My Code</h3>
+            <pre>
+                <font color="#00979c">int</font> <font color="#000000">value</font> <font color="#434f54">=</font> <font color="#d35400">analogRead</font><font color="#000000">(</font><font color="#000000">A1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Will be used to store the input from the V-devider, between 0 and 1023</font>
+                <font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">ledpin</font> <font color="#434f54">=</font> <font color="#000000">9</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;The pin that powers the LED</font>
+                <font color="#00979c">int</font> <font color="#000000">newbrightness</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Will store the brightness to change the LED to between 0 and 255. </font>
+                
+                <font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+                 &nbsp;<font color="#434f54">&#47;&#47; Basic initiilzaiton. </font>
+                 &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">800</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Give me time to get the camera ready to film</font>
+                 &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">ledpin</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; set the LED pin to output to give voltage. </font>
+                 &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">A1</font><font color="#434f54">,</font> <font color="#00979c">INPUT</font><font color="#000000">)</font><font color="#000000">;</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">9600</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; set the LED pin to output to give voltage.</font>
+                 &nbsp;
+                 &nbsp;<font color="#434f54">&#47;&#47; The next step is to calibrate to find max and min values of led&#47; resistor</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;Calibrating&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Let the viewwer know I will begin calabration</font>
+                 &nbsp;<font color="#00979c">int</font> <font color="#000000">minval</font> <font color="#434f54">=</font> <font color="#d35400">analogRead</font><font color="#000000">(</font><font color="#000000">A1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Set the minval to the low value I should expect when the LED is off. </font>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;by reading the value from analog pin 1 attatched to the voltage divider </font>
+                 &nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">ledpin</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turn on the led so I can get high voltage. </font>
+                 &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">2000</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Wait for the resistance of the LDR to change. </font>
+                 &nbsp;<font color="#00979c">int</font> <font color="#000000">maxval</font> <font color="#434f54">=</font> <font color="#d35400">analogRead</font><font color="#000000">(</font><font color="#000000">A1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Check the value obtained with the voltage dividor after attatching the things</font>
+                 &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">100</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Wait a tiny bit to be safe. </font>
+                 &nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">ledpin</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turn off the LED</font>
+                
+                 &nbsp;<font color="#434f54">&#47;&#47; Print the minimum and maximim values to the Serial output. </font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;Min value :&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;Print what is in the quotation marks to the serial terminal</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">minval</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47;Print the variable value to the serial terminal</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;Max value :&#34;</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47;Print what is in the quotation marks to the serial terminal</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">maxval</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;Print the variable value to the serial terminal</font>
+                <font color="#000000">}</font>
+                
+                <font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+                 &nbsp;<font color="#434f54">&#47;&#47; put your main code here, to run repeatedly:</font>
+                 &nbsp;<font color="#000000">value</font> <font color="#434f54">=</font> <font color="#d35400">analogRead</font><font color="#000000">(</font><font color="#000000">A1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Check the Value produced by the </font>
+                 &nbsp;<font color="#000000">newbrightness</font> <font color="#434f54">=</font> <font color="#d35400">map</font><font color="#000000">(</font><font color="#000000">value</font><font color="#434f54">,</font> <font color="#000000">minval</font><font color="#434f54">,</font> <font color="#000000">maxval</font><font color="#434f54">,</font> <font color="#000000">255</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Calculate the inverse of the &nbsp;measuered value from the LDR</font>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; in the range of 255 to 0 based on the calibrated valuses from above.</font>
+                 &nbsp;<font color="#434f54">&#47;&#47; Print out the value measured across the V-devider though the analog read. </font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;Measured value :&#34;</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47;Print what is in the quotation marks to the serial terminal</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">value</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;Print the variable value to the serial terminal</font>
+                
+                 &nbsp;<font color="#434f54">&#47;&#47; Print out the brightness value that was calculated with the map.</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34; &nbsp;Set Brightness :&#34;</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47;Print what is in the quotation marks to the serial terminal</font>
+                 &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">newbrightness</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;<font color="#434f54">&#47;&#47;Print the variable value to the serial terminal</font>
+                
+                 &nbsp;<font color="#434f54">&#47;&#47;Sets the led brightness to the one calculated. </font>
+                 &nbsp;<font color="#d35400">analogWrite</font><font color="#000000">(</font><font color="#000000">ledpin</font><font color="#434f54">,</font> <font color="#000000">newbrightness</font><font color="#000000">)</font><font color="#000000">;</font>
+                 &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">850</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;wait before we do it again. </font>
+                <font color="#000000">}</font>
+                
+                
+                </pre>
+        
+    </body>
+</html>
