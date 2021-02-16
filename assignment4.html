@@ -1,0 +1,162 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title> Travis Assignment 2</title> 
+
+        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+    </head> 
+    <body> 
+        <div class="header">
+            <h1>Libraries</h1>
+            <h3> Travis Neils</h3>
+            <h3>Here is a video of my circuit!</h3>
+            <video width="540" controls autoplay loop muted>
+                <source src="media/lcd.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            <p>
+                For this assignment I wanted to be able to write on the display panel with the remote control. I can move the cursor back and forth
+                with rewind and fast forward on the remote to select where the character should go. The power button resets the text to "Hello Blair!"
+            </p>
+            
+            <p> The primary difficulty I faced was that I have lost my potentiometer so I had to use a voltage divider to adjust the contrast of the LCD
+                screen, which isn't ideal because I didn't know what voltage to aim and trail and error with modifying resistors is slow. I ended up using a
+                100 and 1k ohm resistor to provide 5V * 1kΩ / (100Ω + 1kΩ) = 4.54 V to the contrast pin on the display.
+            </p>
+            <p> Neither my input or my output had to be calibrated with code, and since I calibrated in a3 I didn't add an additional component just 
+                to calibrate it. 
+            </p>
+            
+            <img src="media/circuit lcd.png" width=400>
+
+            <p>
+                To connect the circuit I followed the instructions on this site so all the wires were connected to the same pins on the boards. 
+                with the modification of using a voltage divider instead of a potentiometer.
+            </p>
+            <img src="media/Arduino-LCD.png" width=600>
+            <h3> Here is a close up picture of my circuit
+            </h3>
+            <div class='imgcont'>
+                <div>
+                    <img src="media/lcd1.jpg" width=400>
+                    <p> The voltage divider to set a good contrast value on the LCD, the green wire goes to the V0 pin on LCD. Ground and
+                        power are connected respectively to the Arduino.
+                    </p>
+                </div>
+                <div>
+                    <img src="media/lcd2.jpg" width=400>
+                    <p>An overview of the connections with between LCD and Arduino pins 2,3,4,5,11,12 are connected to the LCD pins, D7,
+                        D6, D5, D4, E, RS respectively. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/lcd3.jpg" width=400>
+                    <p> Here we can see the 220 Ohm resistor that controls the backlight brightness of the LCD. A 220 was recommended
+                        in the tutorial so that is what I used. The resistor connects LCD's A with 5V.
+                    </p>
+                </div>
+                <div>
+                    <img src="media/lcd4.jpg" width=400>
+                    <p>Top down view of the circuit. Orange on the right is the output for the IR receivers. All components are powered thought the top
+                        power strops.</p>
+                </div>
+                <div>
+                    <img src="media/lcd5.jpg" width=400>
+                    <p>All three of the Dark Blue wires connect to ground. (I didn't have any short black cables). On the LCD those wires are connected to
+                        VSS, RW, and K. The red Pin connects it with power through VDD
+                    </p>
+                </div>
+                <div>
+                    <img src="media/lcd6.jpg" width=400>
+                    <p>The IR receiver setup with orange to pin 8.</p>
+                </div>
+            </div>
+            
+            <h3>My Code</h3>
+            <p> My code facilitates a couple affordances. The first is to allow cursor control with the speed buttons. The second is to 
+                allow input of the number that was pressed on the keypad. I set the power button to reset the display. I constrained the cursor to stay 
+                on the display.
+            </p>
+            <p> 
+                I had difficulty with the setCharAt() function because it would just print garbage instead of character on the LCD display. 
+                I was able to overcome this with substrings. 
+            </p>
+<pre>
+<font color="#5e6d03">#define</font> <font color="#000000">DECODE_NEC</font> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">1</font> <font color="#434f54">&#47;&#47; ensuere the correct protocol is used for the IR reciever.</font>
+
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">LiquidCrystal</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font> <font color="#434f54">&#47;&#47;import LCD library</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">IRremote</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font> <font color="#434f54">&#47;&#47;Import remote reciever library</font>
+
+<b><font color="#d35400">LiquidCrystal</font></b> <font color="#000000">lcd</font><font color="#000000">(</font><font color="#000000">12</font><font color="#434f54">,</font> <font color="#000000">11</font><font color="#434f54">,</font> <font color="#000000">5</font><font color="#434f54">,</font> <font color="#000000">4</font><font color="#434f54">,</font> <font color="#000000">3</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;instantiate a LCD object with the pins it is connected too.</font>
+
+
+<font color="#00979c">int</font> <font color="#000000">IR_RECEIVE_PIN</font> <font color="#434f54">=</font> <font color="#000000">8</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;the pin connected to IR output.</font>
+
+<font color="#434f54">&#47;&#47; The values of this array are the IR reciever codes for the buttons coresponding to the index of this array </font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">remote_numbers</font><font color="#000000">[</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font><font color="#000000">0x16</font><font color="#434f54">,</font> <font color="#000000">0x0C</font><font color="#434f54">,</font> <font color="#000000">0x18</font><font color="#434f54">,</font> <font color="#000000">0x5E</font><font color="#434f54">,</font> <font color="#000000">0x08</font><font color="#434f54">,</font> <font color="#000000">0x1C</font><font color="#434f54">,</font> <font color="#000000">0x5A</font><font color="#434f54">,</font> <font color="#000000">0x42</font><font color="#434f54">,</font> <font color="#000000">0x52</font><font color="#434f54">,</font> <font color="#000000">0x4A</font><font color="#000000">}</font><font color="#000000">;</font>
+
+<font color="#434f54">&#47;&#47;What will be displayed to the LCD initialy.</font>
+<font color="#00979c">String</font> <font color="#000000">display_text</font> <font color="#434f54">=</font> <font color="#00979c">String</font><font color="#000000">(</font><font color="#005c5f">&#34;Hello Blair&#34;</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">cursor_position</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;variable to store x of cursor position, initial = far left.</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+    &nbsp;<font color="#434f54">&#47;&#47; Start the receiver, enable feedback LED, take LED feedback pin from the internal boards definition</font>
+    &nbsp;<font color="#000000">IrReceiver</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">IR_RECEIVE_PIN</font><font color="#434f54">,</font> <font color="#000000">ENABLE_LED_FEEDBACK</font><font color="#000000">)</font><font color="#000000">;</font> 
+
+    &nbsp;<font color="#434f54">&#47;&#47; initilise the LCD with 16 columns and 2 rows</font>
+    &nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">16</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font>
+
+    &nbsp;<font color="#434f54">&#47;&#47;sync the lcd cursor with my cursor value</font>
+    &nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">setCursor</font><font color="#000000">(</font><font color="#000000">cursor_position</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">display_text</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Display the variable display text on the LCD.</font>
+    &nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">cursor</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Set the cursor to display.</font>
+    &nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">setCursor</font><font color="#000000">(</font><font color="#000000">cursor_position</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;sync the lcd cursor with my cursor value</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+    &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">IrReceiver</font><font color="#434f54">.</font><font color="#d35400">decode</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; Check if the IR reviever has recieved anything</font>
+    &nbsp;&nbsp;&nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#00979c">byte</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">10</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; run through i = 0 -&gt; 10 to check if number buttons were pressed.</font>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; If the IR reciever returns the value at that index in array,</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; then the i button would have been pressed</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">IrReceiver</font><font color="#434f54">.</font><font color="#000000">decodedIRData</font><font color="#434f54">.</font><font color="#000000">command</font> <font color="#434f54">==</font> <font color="#000000">remote_numbers</font><font color="#000000">[</font><font color="#000000">i</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">{</font> &nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; replace the character in the display text at the cursor locaiton with the pressed button number.</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">display_text</font> <font color="#434f54">=</font> <font color="#00979c">String</font><font color="#000000">(</font><font color="#000000">display_text</font><font color="#434f54">.</font><font color="#d35400">substring</font><font color="#000000">(</font><font color="#000000">0</font><font color="#434f54">,</font> <font color="#000000">cursor_position</font><font color="#000000">)</font> <font color="#434f54">+</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">display_text</font><font color="#434f54">.</font><font color="#d35400">substring</font><font color="#000000">(</font><font color="#000000">cursor_position</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;increment the cursor value but keep it between 0 and 15 so it stays on screen</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">cursor_position</font> <font color="#434f54">=</font> <font color="#d35400">constrain</font><font color="#000000">(</font><font color="#000000">cursor_position</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#434f54">,</font> <font color="#000000">15</font><font color="#000000">)</font><font color="#000000">;</font> 
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+    &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; clear the LCD so we can reprint</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">clear</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+
+    &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;reprint the display text to the lcd incase there is a new character.</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">display_text</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;<font color="#5e6d03">switch</font> <font color="#000000">(</font><font color="#000000">IrReceiver</font><font color="#434f54">.</font><font color="#000000">decodedIRData</font><font color="#434f54">.</font><font color="#000000">command</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; Check different values of the IR remote input </font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">0x45</font><font color="#434f54">:</font> <font color="#000000">display_text</font> <font color="#434f54">=</font> <font color="#00979c">String</font><font color="#000000">(</font><font color="#005c5f">&#34;Hello Blair&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; If the input is the power button reset to &#34;Hello Blair&#34;</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;exit out of switch statement</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; If rewind button then move cursor postion back one but keep it between 0 and 15 so it stays on screen</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">0x44</font><font color="#434f54">:</font> <font color="#000000">cursor_position</font> <font color="#434f54">=</font> <font color="#d35400">constrain</font><font color="#000000">(</font><font color="#000000">cursor_position</font> <font color="#434f54">-</font> <font color="#000000">1</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#434f54">,</font> <font color="#000000">15</font><font color="#000000">)</font><font color="#000000">;</font> 
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;exit out of switch statement</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; If ff button then move cursor forward one but keep it between 0 and 15 so it stays on screen</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">0x43</font><font color="#434f54">:</font> <font color="#000000">cursor_position</font> <font color="#434f54">=</font> <font color="#d35400">constrain</font><font color="#000000">(</font><font color="#000000">cursor_position</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#434f54">,</font> <font color="#000000">15</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;exit out of switch statement</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+    &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;sync the lcd cursor with my cursor value that could have just been updated with remote.</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">lcd</font><font color="#434f54">.</font><font color="#d35400">setCursor</font><font color="#000000">(</font><font color="#000000">cursor_position</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; allow the IR reciever to obtain a new value.</font>
+    &nbsp;&nbsp;&nbsp;<font color="#000000">IrReceiver</font><font color="#434f54">.</font><font color="#d35400">resume</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+    &nbsp;<font color="#000000">}</font>
+
+    &nbsp;<font color="#434f54">&#47;&#47; wait a little to prevent duplicate movements.</font>
+    &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">200</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+</pre>
+    </body>
+</html>
