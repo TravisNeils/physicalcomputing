@@ -30,25 +30,31 @@
             </p>
 			<img src="media/circuit (6).png" width=400>
 			<p>
-				My LED strip has one 68 Ohm resisor for every 3 LEDs. Using my multimeter I measuered forward voltage of 2.6 volts on 
+				My LED strip has one 68 Ohm resistor for every 3 LEDs. Using my multimeter I measured forward voltage of 2.6 volts on 
 				the small LEDS in my strip. I don't have the exact same one as for the class. I believe that they are meant to be run
-				off of 9 volts. Across the LEDs there should be 19.5 / (1068 Ohms) = 18 mA which is a target current for LEDs because
-				it is well below the 30 mA danger zone but still quite bright.
+				off of 9 volts. Across the LEDs there should be 19.5 - 7.8 / (1068 Ohms) = 11 mA which is 
+				a little lower than the target current for LEDs with is around 18 but it
+				it is well below the 30 mA danger zone and still bright enough for my tests. 
 			</p>
 			<p> 
-				On the Transistor I use a 330 ohm resistor to connect the Gate let prevent short circuting while allowing enough current
+				On the Transistor I use a 330 ohm resistor to connect the Gate let prevent short circuiting while allowing enough current
 				to completely turn on the LEDs when the pin is written high.
 			</p>
 			<p>
 				The DHT11 was very easy to hook up as it has an internal resistor so it can connect directly to the ardiuno.
 				It connects to pin 2.
 			</p>
-			<h3> Methedology</h3>
+			<p>
+				These transistors can handle a max current of close to 5 amps. Because I have a 1000 ohm resistor and LEDs between 
+				the power source and drain the current is all the way down to 11mA from the source. From the Gate I have a current of 
+				5V / 330 ohms = 15 mA, which is also very low and safe!
+			</p>
+			<h3> Methodology</h3>
 			<p>
 				For this experiment I measured the temperature as I used different patters of on and off on the transistor. I wanted to
 				see what makes it hot and what isn't that bad for it. 
-				I tested all of the following combinations of (on, off) times in miliseonds repeated for 60000 ms(1 minute) each while testing
-				change in tempreature
+				I tested all of the following combinations of (on, off) times in milliseconds repeated for 60000 ms(1 minute) each while testing
+				change in temperature
 			</p>
 			<ul>
 				<li>(0.0, 60000.0)</li>
@@ -68,8 +74,8 @@
 				<li>(60000.0, 0.0)</li>
 			</ul>
 			<p>
-				I took the values I got for Temp and wrote them in csv format to the serial then coppied them and opend them so 
-				I could create a visuzliation with them. 
+				I took the values I got for Temp and wrote them in csv format to the serial then copied them and opened them so 
+				I could create a visualization with them. 
 			</p>
 			<img src="media/power_serial.png" width=300>
 			<h3>Results</h3>
