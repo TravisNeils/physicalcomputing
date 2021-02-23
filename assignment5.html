@@ -1,0 +1,251 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title> Travis Assignment 5</title> 
+
+        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+    </head> 
+    <body> 
+        <div class="header">
+            <h1>High Voltage</h1>
+            <h3> Travis Neils</h3>
+            <h3>Here is a video of my circuit!</h3>
+            <video width="540" controls autoplay loop muted>
+                <source src="media/high.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            <p>
+                For this assignment I wanted to see which activities a transistor can do causes them to create heat. 
+				To do this I use the temperate humidity sensor to capture temperature of the transistor as I ran it through
+				different on/ off patterns. 
+            </p>
+            
+            <p> 
+				My load for this assignment was a LED strip that I was running off 12 volts. My power supply was 19.5 
+				volts with a max of 4.7 amps.
+            </p>
+			<img src="media/circuit (6).png" width=400>
+			<p>
+				My LED strip has one 68 Ohm resisor for every 3 LEDs. Using my multimeter I measuered forward voltage of 2.6 volts on 
+				the small LEDS in my strip. I don't have the exact same one as for the class. I believe that they are meant to be run
+				off of 9 volts. Across the LEDs there should be 19.5 / (1068 Ohms) = 18 mA which is a target current for LEDs because
+				it is well below the 30 mA danger zone but still quite bright.
+			</p>
+			<p> 
+				On the Transistor I use a 330 ohm resistor to connect the Gate let prevent short circuting while allowing enough current
+				to completely turn on the LEDs when the pin is written high.
+			</p>
+			<p>
+				The DHT11 was very easy to hook up as it has an internal resistor so it can connect directly to the ardiuno.
+				It connects to pin 2.
+			</p>
+			<h3> Methedology</h3>
+			<p>
+				For this experiment I measured the temperature as I used different patters of on and off on the transistor. I wanted to
+				see what makes it hot and what isn't that bad for it. 
+				I tested all of the following combinations of (on, off) times in miliseonds repeated for 60000 ms(1 minute) each while testing
+				change in tempreature
+			</p>
+			<ul>
+				<li>(0.0, 60000.0)</li>
+				<li>(0.5, 1.5)</li>
+				<li>(1.0, 1.0)</li>
+				<li>(1.5, 0.5)</li>
+				<li>(5.0, 5.0)</li>
+				<li>(10.0, 10.0)</li>
+				<li>(50.0, 50.0)</li>
+				<li>(50.0, 250.0)</li>
+				<li>(100.0, 100.0)</li>
+				<li>(200.0, 1500.0)</li>
+				<li>(250.0, 50.0)</li>
+				<li>(500.0, 500.0)</li>
+				<li>(1000.0, 1000.0)</li>
+				<li>(1500.0, 200.0)</li>
+				<li>(60000.0, 0.0)</li>
+			</ul>
+			<p>
+				I took the values I got for Temp and wrote them in csv format to the serial then coppied them and opend them so 
+				I could create a visuzliation with them. 
+			</p>
+			<h3>Results</h3>
+			<div>
+			<iframe src="media/temps.html" width="1000" height="500" style="border:none;"></iframe>
+			</div>
+			
+			<p>
+				The first two tests were on all the time and off all the time, The transistor warmed up during both of these. It got the hottest
+				during the very rapid blinking stage with 5ms on 5ms off. After that point it cooled off as the blinking slowed down. 
+				The temperature stayed pretty consistant through the uneven blinking and dropped even more when I did a little on and 
+				then a little off. The PWM with analog write started to heat them back up again. 
+			</p>
+			<p>
+				I think a very important thing to take away from this is that even when the arduino is off and not supplying power to the gate
+				if the power supply is attatched to the transistor it will heat up! I have been sure to unplug it because of this.
+			</p>
+			<p>
+				I probably could have gotten a more accurate reading with a thermistor, but it wouldn't have given me a conversion into 
+				understandable temperatures. The actual transistor is likely much hotter than my reading becasue the reading is through a
+				a gap and the sheilding on the thermometer. I really want a digital temperature probe not a DHT.
+			</p>
+            <h3> Here are a close up pictures of my circuit
+            </h3>
+            <div class='imgcont'>
+                <div>
+                    <img src="media/high1.jpg" width=400>
+                    <p> The resistor closes is the 1k Ohm between source and the LED strip. The LEDs are in the lower right connected to the dark blue and red wires
+                    </p>
+                </div>
+                <div>
+                    <img src="media/high2.jpg" width=400>
+                    <p>We can see the transistor and DHT in the cente rof this picture. The black wire in the lower left runs
+						to ground on the arduino. The LEDs are in the lower left connected to the dark blue and red wires. 
+						The blue wire is connected the Drain pin of the transistor. and black connects source and ground. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/high7.jpg" width=400>
+                    <p> The connection to the LED strip that is pretty sketch because it doesn't have a good way 
+					to connect to bare wires that I could find. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/high4.jpg" width=400>
+                    <p>View of the arduino and the sensor pins.</p>
+                </div>
+                <div>
+                    <img src="media/high5.jpg" width=400>
+                    <p>The orange wire in the center is connected to the gate of the transisor through a 330 ohm resistor
+					and is what I use to control the LEDs. The green wire is the signal from the DHT to pin 2.
+                    </p>
+                </div>
+                <div>
+                    <img src="media/high6.jpg" width=400>
+                    <p>My high voltage power supply, outputs 19.5V 4.7A</p>
+                </div>
+            </div>
+            
+            <h3>My Code</h3>
+<pre>
+<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;DHT.h&#34;</font> &nbsp;<font color="#434f54">&#47;&#47; import library for humitidy and tempreature sensor</font>
+<font color="#5e6d03">#define</font> <font color="#000000">DHTPIN</font> <font color="#000000">2</font> &nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; set the pin dht will be recieved on.</font>
+<font color="#5e6d03">#define</font> <font color="#000000">DHTTYPE</font> <font color="#000000">DHT11</font> &nbsp;<font color="#434f54">&#47;&#47; import library for humitidy and tempreature sensor</font>
+<b><font color="#d35400">DHT</font></b> <font color="#000000">dht</font><font color="#000000">(</font><font color="#000000">DHTPIN</font><font color="#434f54">,</font> <font color="#000000">DHTTYPE</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Create a DHT object.</font>
+<font color="#00979c">int</font> <font color="#000000">elapsedMS</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">transistorGate</font> <font color="#434f54">=</font> <font color="#000000">9</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; The pin connected to the transistor gate.</font>
+<font color="#00979c">const</font> <font color="#00979c">long</font> <font color="#000000">sectionTime</font> <font color="#434f54">=</font> <font color="#000000">60</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; how many seconds I want to run each time period for.</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#434f54">&#47;&#47; put your setup code here, to run once:</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Set the pin mode to an output, pin 9 is PWM enabled so it </font>
+ &nbsp;<font color="#434f54">&#47;&#47; can use analogWrite().</font>
+
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">9600</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;hook up the Serial to send on this port.</font>
+
+ &nbsp;<font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Initilize the humitidy and tempreature sensor.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;ms,temp_f,humidity,on_time,off_time&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; print headers for the csv.</font>
+
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#434f54">&#47;&#47; Turn the transistor off to check temp change when off.</font>
+ &nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">sectionTime</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;wait a second before the next output.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;say for data collection that the cycle is off</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Run the function that logs the temperature passing the time on and off.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">0</font><font color="#434f54">,</font> <font color="#000000">sectionTime</font> <font color="#434f54">*</font> <font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> 
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;<font color="#434f54">&#47;&#47; Turn the transistor on to check temp change when on.</font>
+ &nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">sectionTime</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;wait a second before the next output.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;say for data collection that the cycle is on</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Run the function that logs the temperature passing the time on and off.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">sectionTime</font> <font color="#434f54">*</font> <font color="#000000">1000</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+ &nbsp;<font color="#434f54">&#47;&#47; an array for on off times in miliseonds each on will be run for section duration. &nbsp;</font>
+ &nbsp;<font color="#00979c">int</font> <font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">2</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font> <font color="#000000">{</font><font color="#000000">5</font><font color="#434f54">,</font> <font color="#000000">5</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47;on 5ms, off 5ms checking very fast flashing</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">10</font><font color="#434f54">,</font> <font color="#000000">10</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; slightly slower flahing</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">50</font><font color="#434f54">,</font> <font color="#000000">50</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; still pretty fast flashing</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">100</font><font color="#434f54">,</font> <font color="#000000">100</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; flashing 5 times a second.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">500</font><font color="#434f54">,</font> <font color="#000000">500</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; flashing once a second. </font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">1000</font><font color="#434f54">,</font> <font color="#000000">1000</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; flashing every 2 seconds.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">50</font><font color="#434f54">,</font> <font color="#000000">250</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; checking if there is a difference if off more than on.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">250</font><font color="#434f54">,</font> <font color="#000000">50</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; checking the opposite of the above.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">1500</font><font color="#434f54">,</font> <font color="#000000">200</font><font color="#000000">}</font><font color="#434f54">,</font> <font color="#434f54">&#47;&#47; checking the unbalanced for a longer time</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font><font color="#000000">200</font><font color="#434f54">,</font> <font color="#000000">1500</font><font color="#000000">}</font><font color="#000000">}</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; checking the opposite of the above.</font>
+
+ &nbsp;<font color="#434f54">&#47;&#47; run through each of the rows in the array above.</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">row</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">row</font> <font color="#434f54">&lt;</font> <font color="#000000">10</font><font color="#000000">;</font> <font color="#000000">row</font> <font color="#434f54">=</font> <font color="#000000">row</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47;see how many reps I should use if I want to run for desired section time</font>
+ &nbsp;&nbsp;&nbsp;<font color="#00979c">long</font> <font color="#000000">repCount</font> <font color="#434f54">=</font> <font color="#000000">sectionTime</font> <font color="#434f54">*</font> <font color="#000000">1000</font> <font color="#434f54">&#47;</font><font color="#00979c">long</font><font color="#000000">(</font><font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">0</font><font color="#000000">]</font> <font color="#434f54">+</font> <font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">1</font><font color="#000000">]</font><font color="#000000">)</font> <font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; loop througuh turning on and off the transistor for the desired section time.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">repCount</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; write transistor high, allowing current through</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">0</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; wait for the on time in the array above.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; write transistor low, blocking current.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">1</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47; wait for the off time in the array above.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; Run the function that logs the temperature passing the on and off times</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#00979c">float</font><font color="#000000">(</font><font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">0</font><font color="#000000">]</font><font color="#000000">)</font><font color="#434f54">,</font> <font color="#00979c">float</font><font color="#000000">(</font><font color="#000000">onOfTimes</font><font color="#000000">[</font><font color="#000000">row</font><font color="#000000">]</font><font color="#000000">[</font><font color="#000000">1</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font> 
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;<font color="#434f54">&#47;&#47; check out the effect of PWM cycles on transistor temp</font>
+ &nbsp;<font color="#d35400">analogWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#000000">64</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#434f54">&#47;&#47; run this loop the desired number of seconds time</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">sectionTime</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; wait a second</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">0.5</font><font color="#434f54">,</font> <font color="#000000">1.5</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;number of milliseconds on and off with PWM cycle</font>
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; check out the effect of PWM cycles on transistor temp</font>
+ &nbsp;<font color="#d35400">analogWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#000000">127</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#434f54">&#47;&#47; run this loop the desired number of seconds time</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">sectionTime</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47; wait a second</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">1</font><font color="#434f54">,</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;number of milliseconds on and off with PWM cycle</font>
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;<font color="#d35400">analogWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#000000">191</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">for</font><font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;</font> <font color="#000000">sectionTime</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">i</font> <font color="#434f54">+</font> <font color="#000000">1</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47; wait a second</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">1.5</font><font color="#434f54">,</font> <font color="#000000">.5</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;number of milliseconds on and off with PWM cycle</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;done!&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Alert that all tests are finished.</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#00979c">float</font> <font color="#000000">on</font><font color="#434f54">,</font> <font color="#00979c">float</font> <font color="#000000">off</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">h</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readHumidity</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the humidity in percentage.</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">t</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readTemperature</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the tempurature measured by the DHT in celsius</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">f</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readTemperature</font><font color="#000000">(</font><font color="#00979c">true</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the tempurature measured by the DHT in farienhit</font>
+
+ &nbsp;<font color="#434f54">&#47;&#47; Check if the sensor didn&#39;t respond exiting from the functiion and alerting me.</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">h</font><font color="#000000">)</font> <font color="#434f54">||</font> <font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">t</font><font color="#000000">)</font> <font color="#434f54">||</font> <font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;Failed to read from DHT sensor!&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; alert through serial</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">return</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;exit function</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; print the ms since plugged in.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add comma to seperate value</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the tempurature measured by the DHT in celsius</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add comma to seperate value</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">h</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; print the humidity</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add comma to seperate value</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">on</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; print the time the transistor is powered</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add comma to seperate value</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">off</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; print the time the transistor is unpowered</font>
+
+<font color="#000000">}</font>
+
+
+</pre>
+    </body>
+</html>
