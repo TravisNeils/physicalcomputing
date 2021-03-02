@@ -1,0 +1,5 @@
+I want to test how hot a resistor can get. I will measure with a thermistor and the DHT. I will power the resistor with the 19.5 V current.
+I will use power equation to check how many watts of power I will dissapate across the resistor. In general the lower resistor value the
+more heat it will prouce. I will start with 1k and try to move down to 200 ohms. 
+
+I have an emergency shut-off switch that will stop the circut and start the fan.

@@ -1,0 +1,442 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title> Travis Assignment 5</title> 
+
+        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+    </head> 
+    <body> 
+        <div class="header">
+            <h1>High Voltage</h1>
+            <h3> Travis Neils</h3>
+            <h3>Here is a video of my circuit!</h3>
+            <video width="540" controls autoplay loop muted>
+                <source src="media/p5.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            <p>
+                For this assignment I wanted to I want to test resistor heat with a fan. I would run these tests from
+				p5.js and be collect and display data on there.
+				I will measure with a thermistor and the DHT. I will power the resistor with the 19.5 V current.
+				I will use power equation to check how many watts of power I will dissipate across the resistor. 
+				In general the lower resistor value the more heat it will produce. 
+				I would have a button that could manually shut of the power on the circuit.
+            </p>
+          
+			<img src="media/p5.png" width=400>
+			<p>
+				I measured the voltage across the thermistor using a voltage divider with a 10k resistor. I used 10k because
+				10k is close to the resistance of the thermistor at room temperature. As it gets hotter the resistance will
+				decrease a long with voltage across it.
+			</p>
+			<p> 
+				On the Transistor I use a 330 ohm resistor to connect the Gate let prevent short circuiting while allowing enough current
+				to completely turn on the power.
+			</p>
+			<p>
+				The DHT11 was very easy to hook up as it has an internal resistor so it can connect directly to the ardiuno.
+				It connects to pin 2.
+			</p>
+			<p>
+				These transistors can handle a max current of close to 32 amps! Because I have only have a 1000 ohm resistor beteween
+				the power source and drain the current is at 19.5 V/ 1000Ohms = 0.0195 A, well below the safe limit.
+				From the Gate I have a current of 
+				5V / 330 ohms = 15 mA, which is also very low and safe!
+			</p>
+			<p>
+				For this experiment I measured the temperature produced by the resistor. The heat produced is correlated with the 
+				power drop across the resistor. P=VI we got current at: 19.5 V/ 1000Ohms = 0.0195 A and voltage will be the full 19.5 volts
+				so power will be 0.38 Watts. If I had used a 100 ohm resistor I would dissipate 3.8 watts and if I used a 10 ohm I would have
+				dissipated 38 watts. I originally planned to try a 100 ohm resistor but as I was already able to get to 110 degrees F with the 
+				1000 ohm resistor I was worried that it would get too hot. 
+			</p>
+			<h3> P5.js Interactions</h3>
+			<img src="media/p5_screen.png" width=500>
+			<p>
+				At the top of the screen I provide three buttons that send information to the Arduino. The toggle power and fan
+				buttons send a char to the Arduino that signals it to toggle either the power or the fan. The state of the 
+				fan and power are stored on the Arduino and returned evey cycle (2s) to the site. The emergency stop tells the arduino
+                to turn off the power and turn on the fan. I put this in place so that If I smelt smoke I could press it. 				
+			</p>
+			<p>
+				Each cycle (2s) the Arduino builds and sends a JSON object to the site. In stead of the recommended list, I used a js object with
+				named properties. "{"dht" :68.00,"thermistor" :577,"button":0}" was sent. This made it much more readable and easier to keep track
+				or which properties was which. It also let me send additional properties when needed, such as "pressed" to return the symbol that
+				the Arduino received. The button press is sent to the server then the server will send it back to tell the arduino to turn things off
+				and will display a message on the screen alerting what is happening. 
+			</p>
+			<p>
+				Below the buttons I display the power and fan state as returned by the ardiuno so it takes a little white to update but it is accurate to what the arduino
+				is activily doing. Using the 0-1023 value from analogRead() I calculate the voltage and the resistance across the arduino. I wanted to calibrate a thermistor to 
+				get enough points on the logritymic resistance curve to be able to turn a resistance into a temperature but the DHT is very slow to change and lags behind the thermistor
+				so I wasn't able to get it to change the values enough. I think I would have to put them both together in different temperature enviroments and let them adjust then
+				get a reading a couple times to get a good value, and that would be tricky to move the areuino and run it for long enough either outside or in a refrigerator or something.
+			</p>
+			
+			<p>
+				I am also plotting the values that I get from the arduino on the display. This is a poor visuzliation becasue the values don't directly correspond to
+				eachother and don't share an axis. The Green DHT value is in deg F while the thermistor value is (1023 - thermistor val)/10 to give a value on a similar scale.
+				
+			</p>
+			
+			
+			
+			<h3>Images</h3>
+			<p>
+				I tried to be more orginized with my wire colors this time. I used Green for inputs, orange for outputs, yellow for 19.5 power supply power, and the normal
+				black and red for ground and power. 
+			</p>
+			
+            <div class='imgcont'>
+                <div>
+                    <img src="media/p5_1.jpg" width=400>
+                    <p> An overview of the circut the power Yellow wires running down the center are the higher voltage. The fan is hooked in on the far
+						end and will blow air down on the temperature sensors down in the middle fo the board. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/p5_3.jpg" width=400>
+                    <p>The button and fan hook up. The fan is hooked up straight to the pin 7 and ground. The button has power on one side and pin 4 + 10k resistor to ground.
+                    </p>
+                </div>
+                <div>
+                    <img src="media/p5_10.jpg" width=400>
+                    <p> The connection to the LED strip that is pretty sketch because it doesn't have a good way 
+					to connect to bare wires that I could find. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/p5_8.jpg" width=400>
+                    <p>View of the arduino and where the pins leave.</p>
+                </div>
+                <div>
+                    <img src="media/p5_5.jpg" width=400>
+                    <p>The orange wire provides power to the transistor gate through the 330 ohm resistor. The yellow wire going to the drain carries the 19.5 V after the resisor
+						that I am dissipating power across. The source is connected to ground. 
+                    </p>
+                </div>
+                <div>
+                    <img src="media/p5_6.jpg" width=400>
+                    <p>The DHT thermisor, resistor heat producing measuring combo. The little balack thing above the resitor is the thermistor. They are touching to get the
+					most thermal conductivity. The 10k resistor lower in the picutre is the other half of the voltage divider to measure the resitance of the thermisor</p>
+                </div>
+            </div>
+            
+            <h3>My Code</h3>
+<pre>
+<font color="#5e6d03">#include</font> <font color="#005c5f">&#34;DHT.h&#34;</font> &nbsp;<font color="#434f54">&#47;&#47; import library for humitidy and tempreature sensor</font>
+<font color="#5e6d03">#define</font> <font color="#000000">DHTPIN</font> <font color="#000000">2</font> &nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; set the pin dht will be recieved on.</font>
+<font color="#5e6d03">#define</font> <font color="#000000">DHTTYPE</font> <font color="#000000">DHT11</font> &nbsp;<font color="#434f54">&#47;&#47; import library for humitidy and tempreature sensor</font>
+<b><font color="#d35400">DHT</font></b> <font color="#000000">dht</font><font color="#000000">(</font><font color="#000000">DHTPIN</font><font color="#434f54">,</font> <font color="#000000">DHTTYPE</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Create a DHT object.</font>
+
+<font color="#00979c">int</font> <font color="#000000">thermistor</font> <font color="#434f54">=</font> <font color="#000000">A1</font><font color="#000000">;</font>
+
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">transistorGate</font> <font color="#434f54">=</font> <font color="#000000">9</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; The pin connected to the transistor gate.</font>
+<font color="#00979c">const</font> <font color="#00979c">long</font> <font color="#000000">sectionTime</font> <font color="#434f54">=</font> <font color="#000000">60</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; how many seconds I want to run each time period for.</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">buttonPin</font> <font color="#434f54">=</font> <font color="#000000">4</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; pin button output is connected to</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">fanPin</font> <font color="#434f54">=</font> <font color="#000000">7</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; pin that powers the fan.</font>
+
+<font color="#00979c">boolean</font> <font color="#000000">power</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; stores if power is being provided to the transistor gate. </font>
+<font color="#00979c">boolean</font> <font color="#000000">fan</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; stores if power is being provided to the transistor gate. </font>
+
+<font color="#434f54">&#47;&#47; variable to store the button state.</font>
+<font color="#00979c">int</font> <font color="#000000">buttonState</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+
+<font color="#434f54">&#47;&#47; variable to store the value read off thermistor</font>
+<font color="#00979c">int</font> <font color="#000000">tval</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> &nbsp;
+
+
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Set the pin mode to an output, pin 9 is PWM enabled so it </font>
+ &nbsp;
+
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">9600</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;hook up the Serial to send on this port.</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">buttonPin</font><font color="#434f54">,</font> <font color="#00979c">INPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; button will measure voltage</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">fanPin</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; fan will need output voltage.</font>
+
+ &nbsp;<font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Initilize the humitidy and tempreature sensor.</font>
+
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">2000</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;wait a second before the next output.</font>
+ &nbsp;<font color="#434f54">&#47;&#47;say for data collection that the cycle is on</font>
+ &nbsp;<font color="#434f54">&#47;&#47; Run the function that logs the temperature passing the time on and off.</font>
+ &nbsp;<font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#000000">sectionTime</font> <font color="#434f54">*</font> <font color="#000000">1000</font><font color="#434f54">,</font> <font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#434f54">&#47;&#47; read the state of the pushbutton value:</font>
+ &nbsp;
+ &nbsp;<font color="#000000">tval</font> <font color="#434f54">=</font> <font color="#d35400">analogRead</font><font color="#000000">(</font><font color="#000000">thermistor</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;<font color="#434f54">&#47;&#47; read the input pin</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,\&#34;thermistor\&#34; :&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add another field the the JSON object.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">tval</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; add the value to the things</font>
+ &nbsp;
+ &nbsp;<font color="#434f54">&#47;&#47; check if the pushbutton is pressed. If it is, the buttonState is HIGH:</font>
+ &nbsp;<font color="#000000">buttonState</font> <font color="#434f54">=</font> <font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">buttonPin</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the digital input from the button eiher high or low. </font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,\&#34;button\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; let the JSON object know I will send it another field now. </font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">buttonState</font> <font color="#434f54">==</font> <font color="#00979c">HIGH</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; print 1 if the button is on to let the server know to execute emergency stop</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">1</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font> <font color="#5e6d03">else</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; print 1 if the button is on to let the server know to continue as normal</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">0</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+
+ &nbsp;<font color="#434f54">&#47;&#47; check all inputs</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">available</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">&gt;</font> <font color="#000000">0</font><font color="#000000">)</font> <font color="#000000">{</font> &nbsp;&nbsp;<font color="#434f54">&#47;&#47; if there&#39;s serial data </font>
+ &nbsp;&nbsp;&nbsp;<font color="#00979c">char</font> <font color="#000000">inChar</font> <font color="#434f54">=</font> <font color="#00979c">char</font><font color="#000000">(</font><b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">read</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read value from serial</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;, \&#34;recieved\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; format to send back the data to the server for troubleshooting.</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">inChar</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;&nbsp;<font color="#434f54">&#47;&#47; send it back out as the char.</font>
+ &nbsp;&nbsp;&nbsp;
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">switch</font> <font color="#000000">(</font><font color="#000000">inChar</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#00979c">char</font><font color="#000000">(</font><font color="#00979c">&#39;e&#39;</font><font color="#000000">)</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">fan</font> <font color="#434f54">=</font> <font color="#00979c">true</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turns fan on </font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">power</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turns the power off.</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#00979c">char</font><font color="#000000">(</font><font color="#00979c">&#39;f&#39;</font><font color="#000000">)</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">fan</font> <font color="#434f54">=</font> <font color="#434f54">!</font><font color="#000000">fan</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; toggles fan</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#00979c">&#39;p&#39;</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">power</font> <font color="#434f54">=</font> <font color="#434f54">!</font><font color="#000000">power</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;toggles power through the resistor. </font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;, \&#34;fans\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; format to send back the data to the server for troubleshooting.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">fan</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;, \&#34;power\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; format to send back the data to the server for troubleshooting.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">power</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;
+
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">fan</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; fan will be true if I want to have the fan on otherwise it will be false.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">fanPin</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turn on fan</font>
+ &nbsp;<font color="#000000">}</font> <font color="#5e6d03">else</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">fanPin</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Turn off fan</font>
+ &nbsp;<font color="#000000">}</font>
+
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">power</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; power will be true if I want to have the transistor on otherwise it will be false.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Allow power through transisor</font>
+ &nbsp;<font color="#000000">}</font> <font color="#5e6d03">else</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">transistorGate</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; Allow power through transisor</font>
+ &nbsp;<font color="#000000">}</font>
+ <b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;}&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; End the js object that I am returning. Will alow JSON to sucessfuly parse it. </font>
+
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#000000">outputTemp</font><font color="#000000">(</font><font color="#00979c">float</font> <font color="#000000">on</font><font color="#434f54">,</font> <font color="#00979c">float</font> <font color="#000000">off</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">h</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readHumidity</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the humidity in percentage.</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">t</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readTemperature</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the tempurature measured by the DHT in celsius</font>
+ &nbsp;<font color="#00979c">float</font> <font color="#000000">f</font> <font color="#434f54">=</font> <font color="#000000">dht</font><font color="#434f54">.</font><font color="#d35400">readTemperature</font><font color="#000000">(</font><font color="#00979c">true</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; read the tempurature measured by the DHT in farienhit</font>
+
+ &nbsp;<font color="#434f54">&#47;&#47; Check if the sensor didn&#39;t respond exiting from the functiion and alerting me.</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">h</font><font color="#000000">)</font> <font color="#434f54">||</font> <font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">t</font><font color="#000000">)</font> <font color="#434f54">||</font> <font color="#d35400">isnan</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;Failed to read from DHT sensor!&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; alert through serial</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">return</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;exit function</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;{\&#34;dht\&#34; :&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; start the JSON object with the { and the dht as the first field.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">f</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; write the tempurature measured by the DHT in celsius</font>
+
+<font color="#000000">}</font>
+
+</pre>
+
+<h3>p5.js code</h3>
+
+<code>
+<pre>
+var serial; // variable to hold an instance of the serialport library
+var portName = 'COM5' //'/dev/ttyACM0' //rename to the name of your port
+var datain; //some data coming in over serial!
+var xPos = 0;
+//var dataarray = {"dht" :68.00,"thermistor" :577,"button":0};
+
+let input, p_button, greeting;
+let sent_stop = false;
+
+function setup() {
+  serial = new p5.SerialPort();       // make a new instance of the serialport library
+  serial.on('list', printList);       // set a callback function for the serialport list event
+  serial.on('connected', serverConnected); // callback for connecting to the server
+  serial.on('open', portOpen);        // callback for the port opening
+  serial.on('data', serialEvent);     // callback for when new data arrives
+  serial.on('error', serialError);    // callback for errors
+  serial.on('close', portClose);      // callback for the port closing
+ 
+  serial.list();                      // list the serial ports
+  serial.open(portName);              // open a serial port
+  createCanvas(1200, 800);
+  background(240, 240, 240); // a light grey background
+  
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  p_button = createButton('Toggle power'); 
+  p_button.position(20, 65);
+  p_button.mousePressed(transistor);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  f_button = createButton('Toggle fan');
+  f_button.position(p_button.x + p_button.width + 5, 65);
+  f_button.mousePressed(fans);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  e_button = createButton('EMERGENCY STOP (no power + turn on fan)');
+  e_button.position(f_button.x + f_button.width + 5, 65);
+  e_button.mousePressed(emergency);
+
+  // Create a toggle power button set its position and what will happen with pressed.
+  greeting = createElement('h2', 'Green is DHT value, blue is voltage from thermistor.');
+  greeting.position(20, 5);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  a_status = createElement('h3', 'power off, fan off');
+  a_status.position(p_button.x, p_button.y + p_button.height + 10);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  b_status = createElement('h3', 'temp unknown');
+  b_status.position(a_status.x, a_status.y + a_status.height + 10);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  e_status = createElement('h1', 'Starting up!!');
+  e_status.position(500, 500);
+  
+  // Create a toggle power button set its position and what will happen with pressed.
+  textAlign(CENTER);
+  textSize(50);
+}
+ 
+// get the list of ports:
+function printList(portList) {
+ // portList is an array of serial port names
+ for (var i = 0; i < portList.length; i++) {
+ // Display the list the console:
+   print(i + " " + portList[i]);
+ }
+}
+
+function serverConnected() {
+  print('connected to server.');
+}
+ 
+function portOpen() {
+  print('the serial port opened.')
+}
+ 
+function serialError(err) {
+  print('Something went wrong with the serial port. ' + err);
+}
+ 
+function portClose() {
+  print('The serial port closed.');
+}
+
+function serialEvent() {
+  if (serial.available()) {
+	var datastring = serial.readLine(); // read the serieal input
+	
+	//console.log(datastring);
+	try {
+  	  newarray = JSON.parse(datastring); // can we parse the serial
+	  console.log(newarray);
+  	} catch(err) {
+      	  //console.log(err);
+	}
+	
+	// check if the array exists/ is valid
+	if (typeof(newarray) == 'object') {
+  	  dataarray = newarray; // save it as the data array if it is good. 
+	  let offons = ['off', 'on']; // so that offons[boolean] will return if the thing is on of off.
+	  
+	  // display the power and fan status.
+	  a_status.html('power ' + offons[dataarray['power']] + ', fan ' + offons[dataarray['fans']]); 
+	  
+	  // check if the button was pressed.
+	  if(dataarray['button']){
+		 // ensure that I don't run this fucntion 50 times when the button is pressed. max as 1 pre 2 seconds. 
+		if(!sent_stop){
+			console.log('button pressed');
+			serial.write('e'); // let the arduino no to execute the stop power start fans.
+			//display on center of screen the message
+			e_status.html('Stop button was pressed. Fan starting, power stopping.');
+			sent_stop = true;
+		}
+		
+	  } else {
+		e_status.html(''); // clear the message in the center
+		sent_stop = false; // reset the stop setting if the button is no longer pressed, so it can be pressed again. 
+	  }
+	  
+	  // do the math th find the voltage.
+	  let thermistorV = parseFloat(dataarray['thermistor']) / 1024.0 * 5
+	  // V = 5 * R / (R + 10k)
+	  // V(R + 10k) = 5 * R
+	  // VR - 5R = -10kV
+	  // R = 10kV/(5-V)
+	  let thermistorR = 10000.0* thermistorV /(5.0 - thermistorV); // clalculate resistance from the voltage.
+	  
+	  b_status.html('DHT ' + dataarray['dht'] + 'deg F , thermistor ' + thermistorV + ' V,  '+ thermistorR + ' Ohms '); // display the calcualted values.
+	}
+	// console.log("got back " + datastring);
+
+
+  } 
+}
+
+function graphData(newData) {
+  let increment = 9; // I will only plot every nth value and this is n.
+  if (xPos % increment == 0){
+	// map the range of the input to the window height:
+	var yPos = map(newData, 0, 255, 0, height);
+	//plot the value as a line with height dependednt on the varaible. 
+	line(xPos / increment, height, xPos / increment, height - yPos);
+  }
+  
+  // at the edge of the screen, go back to the beginning:
+  if (xPos >= width * increment) {
+    xPos = 0;
+    // clear the screen by resetting the background:
+    background(240, 240, 240); // a light grey background
+  } else {
+    // increment the horizontal position for the next reading:
+    xPos++;
+  }
+}
+
+function draw() {
+  if(typeof dataarray == 'object'){
+	  stroke('rgba(0,170,0, 1)'); // green
+	  graphData(dataarray['dht']); 
+
+	  stroke('rgba(30,0,200, 1)'); // blue
+	  // translate the tranistor vlaue to somehtingo nthe same scales as the DHT, not accurate in scale but lets us see changes. Together. 
+	  let translatedval = (1023 - dataarray['thermistor'])/10;
+	  graphData(translatedval);
+	  graphData();
+	  xPos++; 
+  } else {
+	text('serial not connected');
+  }
+  
+}
+
+// tell the Arduino to toggle power value
+function transistor() {
+  serial.write('p');
+}
+
+// tell the Arduino to toggle fans value
+function fans() {
+  serial.write('f');
+}
+
+// tell the Arduino to go into emergency mode
+function emergency() {
+  serial.write('e');
+}
+
+</pre>
+</\code>
+
+    </body>
+</html>
