@@ -40,13 +40,13 @@ and they were very thin.
 				While I would have liked to use the servo motor because it is easier to control, I ended up using the stepper because it isn't limited to
 				a 180 degrees of rotation so it could be hooked up directly to the axis the range finder is rotating on. 				
 			</p>
-			<img src="media/stepper.png" width=400>
+			<img src="media/stepper.PNG" width=400>
 			<p> 
 				The stepper is hooked up throught the UNL2003 stepper motor driver module which makes it much easier to control. The tuturials that I looked at
 				recommended not running the stepper off arduino power. I didn't follow that advice becasue I wasn't running the stepper in the background. 
 				And it would have made the device less moble if it had to plug into an adidional powoer supply.
 			</p>
-			<img src="media/sonar.png" width=300>
+			<img src="media/sonar.PNG" width=300>
 			<p>
 				The ultra sonic range finder is hooked up through the soldered on USB cable then to the arduin for the trigger and echo pins with the 
 				voltage and power being shared with the stepper motor. The shouldn't be active at the same time.
@@ -59,7 +59,7 @@ and they were very thin.
 				single step. I expected 1024 steps to be the rotation amount but at the speed that I was rotating, 1024 was almost always lower that the number
 				of steps it would take to make a full rotation. 
 			</p>
-			<img src="media/loop switch.png" width=300>
+			<img src="media/loop switch.PNG" width=300>
 			<p>
 				I used the same circut design as we use with a button to prevent short circuting. To calibrate I rotate counter clockwise until the circut is completed,
 				then I switch direction and roatate until there is contact again, while counting the step taken. I have a hard cap here at 1500 steps to prevent over rotation
