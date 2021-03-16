@@ -1,0 +1,346 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+        <title> Final Project Documentation</title> 
+
+        <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+    </head> 
+    <body> 
+        <div class="header">
+            <h1>Final Project: Room Measure</h1>
+            <h3> Travis Neils</h3>
+            <h3>Here is a video of my project in action!</h3>
+            <video width="840" controls autoplay loop muted>
+                <source src="media/final/testrun.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+				<video width="840" controls autoplay loop muted>
+                <source src="media/final/testruns.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+                </video>
+            <p>
+                For this project I wanted to spin the sonar distance finder around and measure the distance to nearby walls using sonar.
+				Then I would make an image of the walls with P5.js. 
+            </p>
+          
+			
+			<p>
+				This problem was riddled with problems creating a connection that could handle 360 degree rotation. Initialy I tried the jumper wires as shown
+				in my presentation on Thursday. They were very still which caused the mechanical connections to skip or completely stopped movement. I had 
+				planned to get a slip ring and I wanted to have it sooner than Amazon could ship it so I want to some electonic supply stores and they didn't have any
+				and at that point it was to late to order it off Amazon. This gave me an oportunity to practice soldering so that I could connect some much thinner
+and more flexible wires to the range finder that would allow rotation. I used the wires out of a usb cord becuase there were the four of them that I needed
+and they were very thin. 				
+			</p>
+			<p> 
+				While I would have liked to use the servo motor because it is easier to control, I ended up using the stepper because it isn't limited to
+				a 180 degrees of rotation so it could be hooked up directly to the axis the range finder is rotating on. 				
+			</p>
+			<img src="media/stepper.png" width=400>
+			<p> 
+				The stepper is hooked up throught the UNL2003 stepper motor driver module which makes it much easier to control. The tuturials that I looked at
+				recommended not running the stepper off arduino power. I didn't follow that advice becasue I wasn't running the stepper in the background. 
+				And it would have made the device less moble if it had to plug into an adidional powoer supply.
+			</p>
+			<img src="media/sonar.png" width=300>
+			<p>
+				The ultra sonic range finder is hooked up through the soldered on USB cable then to the arduin for the trigger and echo pins with the 
+				voltage and power being shared with the stepper motor. The shouldn't be active at the same time.
+			</p>
+			<h3> Measuring rotations</h3>
+			<p>
+				With the stepper motor and the rest of the weird set up that I have going on the degrees built into the library were innacurate at 
+				translating to degrees rotated on the ardiuno, because I wanted accurate angles I came up with a solution where at one point on the rotation
+				a circut would be completed so that I can calibrate the steps taken for a single rotation, then divide to figure out the angular rotaiton of a
+				single step. I expected 1024 steps to be the rotation amount but at the speed that I was rotating, 1024 was almost always lower that the number
+				of steps it would take to make a full rotation. 
+			</p>
+			<img src="media/loop switch.png" width=300>
+			<p>
+				I used the same circut design as we use with a button to prevent short circuting. To calibrate I rotate counter clockwise until the circut is completed,
+				then I switch direction and roatate until there is contact again, while counting the step taken. I have a hard cap here at 1500 steps to prevent over rotation
+				that could cause damage to the wires. When doing rotations later the loop count will be used to measure out steps for the rotations.
+			</p>
+			<h3> P5.js Communication</h3>
+			<p>
+				After calibration the arduino repeatedly will rotate then measure distance. After measuring the arduino will build and send
+				a JSON object to the site. I used a js object with named fields. "dh": the distance measured in mm, "dtheta": the number of steps away from zero point,
+				"loopsize": the total steps in the loop. This made it much more readable and easier to keep track
+				or which field was which. On the arduino side the numbers are stored as integers but when they are read by the JS they are converted into doubles.
+				this is helpful becauseu I will be doing division and triginomitry where percision is important. I convert the steps/ loopSteps into radians of 
+				rotation then since I know the radius and angle I can covert from radial cordinates into carteasian coordinates which lets me put a circle at 
+				that spot on the screen. 
+			</p>
+			<p>
+				I had planned to add some interaction back from the website to the arduino but I couldn't think of anything that the user could tell the arduino 
+				to do during the measurements that would be useful. 
+			</p>
+			<h3>Images</h3>
+			<p>
+				I tried to be more orginized with my wire colors this time. I used Green for inputs, orange for outputs, yellow for 19.5 power supply power, and the normal
+				black and red for ground and power. 
+			</p>
+			
+            <div class='imgcont'>
+			<div>
+                    <img src="media/final/full.jpg" width=600>
+                    <p> The final product wil all wires exposed to enhance visibility. The orange wheels and the range finder are all on an axis that spins
+below the axis is the stepper they are connected 1:1. 					
+                    </p>
+                </div>
+							<div>
+                    <img src="media/final/mobile.jpg" width=600>
+                    <p> Having the range finder up so high allow the product to fit in a box for easy room to room mobility. It will still
+have to be connedted to a laptop for data transfer. 					
+                    </p>
+                </div>
+				<div>
+                    <img src="media/final/final0.jpg" width=600>
+                    <p> These thick female-male dupont were my first attempt to connect the range finder, they were too stiff and later removed.
+                    </p>
+                </div>
+				<div>
+                    <img src="media/final/final9.jpg" width=600>
+                    <p> This usb cable replaced the wires. It had to be soldered on, it was much more flexible but the black plastic cover was still to stiff to allow
+						unhindered rotation. 
+					</p>
+                </div>
+				<div>
+                    <img src="media/final/final4.jpg" width=600>
+                    <p>After the black cover was removed the wires were adequitley flexible. On one end they are soldered to the range finder, on the othert
+					they are soldered on to jumper wires that were cut in half so they could be attatched to the minibread board and the Arduino pins. </p>
+                </div>
+				<div>
+                    <img src="media/final/final8.jpg" width=600>
+                    <p>The soldered connection between the usb wires and the range finder. The wires themseles were quite small so this was difficult to put together.
+					The usb wires are taped to the structure below this to ease stress on the connection here.</p>
+                </div>
+				<div>
+                    <img src="media/final/final6.jpg" width=600>
+                    <p>The other end of the USB connection before I taped them up. I think I use a little to much solder on them. I twisted the wires together first. The joint
+					seemed pretty solid. It would have been nice to color code them better but I only wanted to cut up 2 jumpers. </p>
+                </div>
+				<div>
+                    <img src="media/final/final7.jpg" width=600>
+                    <p>I covered the connections with electrical tape to prevent short circuting. It seemed to work well</p>
+                </div>
+				<div>
+                    <img src="media/final/final10.jpg" width=600>
+                    <p>Here is my makeshift switch. On the rotating orange belt wheel there is a resistor wrapped around with one leg extened so that at one point of rotation
+					it will contact both the white and orange wires to the left. When they come in contact pin 12 will be writen high, letting me know the orientation
+					of the axle</p>
+                </div>
+                <div>
+                    <img src="media/final/final1.jpg" width=600>
+                    <p> The lower half of the breadboard is just two "rails" the left is 5V connected to the stepper controler and the range finder. The right is Ground
+					connected to those components as well.
+                    </p>
+                </div>
+                <div>
+                    <img src="media/final/final3.jpg" width=600>
+                    <p> The top half of the minibread board contains the wireing for the makeshift loop switch. It is similar to the layout of the button example,
+					the orange wire is connected to pin 10 which is always outputing 5V while the white wire is attatched to pin 12 and a resistor that is connected to ground.
+					I use separate power for the switch and the rest of the circut becuase the stepper would have inadquite current when the connection is made otherwise.
+                    </p>
+                </div>
+                
+                <div>
+                    <img src="media/final/final5.jpg" width=600>
+                    <p>The pins out of the arduino the wires in 2,4,6,8 go to the stepper, 10 acts as a 5V, 11 echo, 12 switch input, 
+					13 trigger. The green wire towards the camera loops around and connects to the range finder.
+                    </p>
+                </div>
+                
+				
+				
+
+				<div>
+                    <img src="media/final/final11.jpg" width=600>
+                    <p>The stepper motor control module, blue is connected to the positve "rail" on the mini bread board and green is connected
+					to the ground "rail"</p>
+                </div>
+            </div>
+            
+            <h3>My Code</h3>
+<pre>
+<font color="#95a5a6">&#47;* Sweep</font>
+<font color="#95a5a6"> by BARRAGAN &lt;</font><u><font color="#95a5a6">http:&#47;&#47;barraganstudio.com</font></u><font color="#95a5a6">&gt;</font>
+<font color="#95a5a6"> This example code is in the public domain.</font>
+<font color="#95a5a6"></font>
+<font color="#95a5a6"> modified 8 Nov 2013</font>
+<font color="#95a5a6"> by Scott Fitzgerald</font>
+<font color="#95a5a6"> </font><u><font color="#95a5a6">http:&#47;&#47;www.arduino.cc&#47;en&#47;Tutorial&#47;Sweep</font></u><font color="#95a5a6"></font>
+<font color="#95a5a6">*&#47;</font>
+
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">CheapStepper</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">hcsr04</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+
+<font color="#5e6d03">#define</font> <font color="#000000">TRIG_PIN</font> <font color="#000000">13</font> <font color="#434f54">&#47;&#47; the pin the trigger for the Range finder is connected to</font>
+<font color="#5e6d03">#define</font> <font color="#000000">ECHO_PIN</font> <font color="#000000">11</font> <font color="#434f54">&#47;&#47; the pin the echo for the Range finder is connected to</font>
+
+<font color="#434f54">&#47;&#47; construct a range finder object passing the pins it is connected and max + min ranges.</font>
+<b><font color="#d35400">HCSR04</font></b> <font color="#000000">hcsr04</font><font color="#000000">(</font><font color="#000000">TRIG_PIN</font><font color="#434f54">,</font> <font color="#000000">ECHO_PIN</font><font color="#434f54">,</font> <font color="#000000">20</font><font color="#434f54">,</font> <font color="#000000">4000</font><font color="#000000">)</font><font color="#000000">;</font>
+
+<font color="#434f54">&#47;&#47; construct a stepper object with the 4 input pins.</font>
+<b><font color="#d35400">CheapStepper</font></b> <font color="#000000">stepper</font> <font color="#000000">(</font><font color="#000000">8</font><font color="#434f54">,</font><font color="#000000">6</font><font color="#434f54">,</font><font color="#000000">4</font><font color="#434f54">,</font><font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font> 
+
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">switchPin</font> <font color="#434f54">=</font> <font color="#000000">12</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; my loop switch output pin</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">switchPower</font> <font color="#434f54">=</font> <font color="#000000">10</font><font color="#000000">;</font> &nbsp;<font color="#434f54">&#47;&#47; will proviede 5V for my switch</font>
+<font color="#00979c">int</font> <font color="#000000">loopSize</font><font color="#000000">;</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">9600</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">stepper</font><font color="#434f54">.</font><font color="#d35400">setRpm</font><font color="#000000">(</font><font color="#000000">10</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; library sugestts that 10 rpm is a safe high torque area.</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">switchPin</font><font color="#434f54">,</font> <font color="#00979c">INPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; set to read input voltage</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">switchPower</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; set to output voltage</font>
+ &nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">switchPower</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; set to output 5 volts.</font>
+ &nbsp;
+ &nbsp;<font color="#434f54">&#47;&#47; move the stepper back to the begining so that I don&#39;t over bend the cables.</font>
+ &nbsp;<font color="#434f54">&#47;&#47;calibrate an entire cycle so that I know how many steps per degree. </font>
+ &nbsp;<font color="#5e6d03">while</font><font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">switchPin</font><font color="#000000">)</font> <font color="#434f54">==</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">{</font> <font color="#434f54">&#47;&#47; While connection isn&#39;t made</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">stepper</font><font color="#434f54">.</font><font color="#d35400">move</font><font color="#000000">(</font><font color="#00979c">false</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; move two steps counter clockwise.</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">10</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; wait 10ms</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#434f54">&#47;&#47; Now the orientation will be at the zero point and I will do a full rotation to see how many steps it takes.</font>
+ &nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#000000">pos</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">&lt;=</font> <font color="#000000">1500</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">+=</font> <font color="#000000">2</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; 1024 steps is close to 360 degrees. 1500 should protect wire from over rotation </font>
+ &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; in steps of 1 degree</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">stepper</font><font color="#434f54">.</font><font color="#d35400">move</font><font color="#000000">(</font><font color="#00979c">true</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">if</font><font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">switchPin</font><font color="#000000">)</font> <font color="#434f54">==</font> <font color="#00979c">HIGH</font> <font color="#434f54">&amp;</font> <font color="#000000">pos</font> <font color="#434f54">&gt;</font> <font color="#000000">100</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">loopSize</font> <font color="#434f54">=</font> <font color="#000000">pos</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; save the loop size. </font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">pos</font><font color="#434f54">=</font><font color="#000000">2000</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; will stop the for loop from going. </font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font> &nbsp;&nbsp;&nbsp;
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">10</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; waits 100ms for the servo to reach the position</font>
+<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;Serial.println(hcsr04.distanceInMillimeters());</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;&nbsp;<font color="#434f54">&#47;&#47;cool down stepper</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#000000">pos</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">&lt;=</font> <font color="#000000">loopSize</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">+=</font> <font color="#000000">2</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; 1024 steps ia 360 degrees. </font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">moveaAndMeasure</font><font color="#000000">(</font><font color="#00979c">false</font><font color="#434f54">,</font> <font color="#000000">pos</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; move counterclockwise and report the distance to serial.</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#000000">pos</font> <font color="#434f54">=</font> <font color="#000000">loopSize</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">&gt;=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">pos</font> <font color="#434f54">-=</font> <font color="#000000">2</font><font color="#000000">)</font> <font color="#000000">{</font> <font color="#434f54">&#47;&#47; goes from 30 degrees to 0 degrees</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">moveaAndMeasure</font><font color="#000000">(</font><font color="#00979c">true</font><font color="#434f54">,</font> <font color="#000000">pos</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">&#47;&#47; move clockwise and report the distance to serial.</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1000</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;&nbsp;<font color="#434f54">&#47;&#47;cool down stepper</font>
+<font color="#000000">}</font>
+
+
+<font color="#00979c">void</font> <font color="#000000">moveaAndMeasure</font><font color="#000000">(</font><font color="#00979c">boolean</font> <font color="#000000">rdirection</font><font color="#434f54">,</font> <font color="#00979c">int</font> <font color="#000000">pos</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;<font color="#000000">stepper</font><font color="#434f54">.</font><font color="#d35400">move</font><font color="#000000">(</font><font color="#000000">rdirection</font><font color="#434f54">,</font> <font color="#000000">2</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; move the distance sensor 2 steps. </font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;{\&#34;dh\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; start the object with { then say the first name dh</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">hcsr04</font><font color="#434f54">.</font><font color="#d35400">distanceInMillimeters</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; send distance val in mm</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,\&#34;dtheta\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; switch to sending dtheta field.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">pos</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; say step count</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#005c5f">&#34;,\&#34;loopsize\&#34;:&#34;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; switch to loopsize field</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">loopSize</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; send total loopsize, doesn&#39;t change.</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">&#39;}&#39;</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; end oject will allow parsing and plotting. </font>
+<font color="#000000">}</font>
+
+</pre>
+
+<h3>p5.js code</h3>
+
+<code>
+<pre>
+var serial; // variable to hold an instance of the serialport library
+var portName = 'COM5' //'/dev/ttyACM0' //rename to the name of your port
+var datain; //some data coming in over serial!
+var xPos = 0;
+
+let greeting;
+let lastAngle = 0;
+
+
+function setup() {
+  serial = new p5.SerialPort();       // make a new instance of the serialport library
+  serial.on('list', printList);       // set a callback function for the serialport list event
+  serial.on('connected', serverConnected); // callback for connecting to the server
+  serial.on('open', portOpen);        // callback for the port opening
+  serial.on('data', serialEvent);     // callback for when new data arrives
+  serial.on('error', serialError);    // callback for errors
+  serial.on('close', portClose);      // callback for the port closing
+ 
+  serial.list();                      // list the serial ports
+  serial.open(portName);              // open a serial port
+  createCanvas(1200, 800);
+  background(240, 240, 240); // a light grey background
+  ellipse(400, 400, 600, 600);
+  greeting = createElement('h2', 'Lets get measuring, the white circle has a radius of 3 meters.');
+  greeting.position(20, 5);
+  e_status = createElement('h1', 'Calibrating!!'); // the total th
+  e_status.position(500, 500);
+}
+ 
+// get the list of ports:
+function printList(portList) {
+ // portList is an array of serial port names
+ for (var i = 0; i < portList.length; i++) {
+ // Display the list the console:
+   print(i + " " + portList[i]);
+ }
+}
+
+function serverConnected() {
+  print('connected to server.');
+}
+ 
+function portOpen() {
+  print('the serial port opened.')
+}
+ 
+function serialError(err) {
+  print('Something went wrong with the serial port. ' + err);
+}
+ 
+function portClose() {
+  print('The serial port closed.');
+}
+
+function serialEvent() {
+  if (serial.available()) {
+	var datastring = serial.readLine(); // read the serieal input
+	let newarray;
+	try {
+  	  newarray = JSON.parse(datastring); // can we parse the serial
+	  console.log(newarray);
+  	} catch(err) {
+      	  //console.log(err);
+	}
+	if (typeof(newarray) == 'object'&& lastAngle != newarray['dtheta']) {
+	  e_status.html(''); // clear the starting up message
+  	  dataarray = newarray; // save it as the data array if it is good.
+	  lastAngle = newarray['dtheta'];
+	  let angle = 2*Math.PI -dataarray['dtheta']/dataarray['loopsize']*2*Math.PI; // calculate the angle with the steps taken out of total loop.
+	  dataarray['x'] = cos(angle)*dataarray['dh']; // use trig to get x coord of measured object.
+	  dataarray['y'] = sin(angle)*dataarray['dh']; // use trig to get y coord of measured object.
+	  console.log(dataarray);
+	}
+	//graphData(datastring);
+  } 
+}
+
+function draw() {
+	if(typeof dataarray == 'object'){
+		stroke('rgba(0,170,0, 1)'); // change stroke color to green so circles are green 
+		ellipse(400+ dataarray['x']/10, 400+dataarray['y']/10, 7, 7); // draw the circle where the point is measured.
+		if (dataarray['dtheta'] < 3) {
+			background(240, 240, 240);
+			stroke('rgba(255, 255,255, 1)'); // green
+			ellipse(400, 400, 600, 600);
+		}
+	}
+  
+}
+
+
+
+</pre>
+</\code>
+
+    </body>
+</html>
